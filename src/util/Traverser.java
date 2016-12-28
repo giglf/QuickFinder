@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Brute force traverse all file.</br> 
+ * BFS traverse all file.</br> 
  * And update it to databases.
  */
 public class Traverser {
@@ -25,19 +25,25 @@ public class Traverser {
 		directory.add(file);
 		while(!directory.isEmpty()){
 			File currentFile = directory.poll();
-			File[] fileList = currentFile.listFiles();
-			for(File f : fileList){
-				if(f.isDirectory()){
-					directory.add(f);
-				} else{
-					String filename = f.getName();
-					String suffix;
-					if(filename.lastIndexOf('.')<0)
-						suffix = "";
-					else
-						suffix = filename.endsWith(".tar.gz")? "tar.gz" : filename.substring(filename.lastIndexOf('.'));
-					dbManager.insertPath(f.getAbsolutePath(), filename, suffix);
+			try {
+				File[] fileList = currentFile.listFiles();
+				for (File f : fileList) {
+					if (f.isDirectory()) {
+						directory.add(f);
+					} else {
+						String filename = f.getName();
+						String suffix;
+						if (filename.lastIndexOf('.') < 0)
+							suffix = "";
+						else
+							suffix = filename.endsWith(".tar.gz") ? "tar.gz"
+									: filename.substring(filename.lastIndexOf('.'));
+						dbManager.insertPath(f.getAbsolutePath(), filename, suffix);
+					}
 				}
+			} catch(NullPointerException e){
+				//如System Volume Information这种文件夹不可访问
+				System.out.println("该文件不可访问："+ currentFile.getAbsolutePath());
 			}
 		}
 	}
