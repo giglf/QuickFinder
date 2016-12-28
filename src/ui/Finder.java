@@ -7,12 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -40,6 +38,8 @@ import javax.swing.JFileChooser;
 
 public class Finder {
 
+	public static final String DIR_SEPERATE = System.getProperties().getProperty("file.separator");
+	
 	private JFrame frmQuickfinder;
 	private JTextField editText;
 	private JButton searchButton;
@@ -154,8 +154,7 @@ public class Finder {
 				if(canCopy == JFileChooser.APPROVE_OPTION){
 					File target = chooser.getSelectedFile();
 					File source = new File(resultShow.getSelectedValue().toString());
-					String sep = System.getProperties().getProperty("file.separator");
-					boolean success = copyFile(source.getAbsolutePath(), target.getAbsolutePath() + sep + source.getName());
+					boolean success = copyAll(source.getAbsolutePath(), target.getAbsolutePath());
 					if(success){
 						JOptionPane.showMessageDialog(null, "Copy Successed", "Success", JOptionPane.WARNING_MESSAGE);
 					} else{
@@ -253,7 +252,7 @@ public class Finder {
 	
 	//更新数据库的操作
 	private void updateDataBase(String path, boolean isMulti){
-		dbManager.dropTable();
+		dbManager.dropTable(); //若更新需要完全扫一遍目录查看有哪些文件修改过，还不如删掉表重建
 		dbManager.createTable();
 		updateButton.setEnabled(false); //使按钮不可用
 		if(isMulti){
@@ -266,6 +265,32 @@ public class Finder {
 		}
 		updateButton.setEnabled(true); //更新完毕，使按钮可用
  	}
+	
+	//复制所有文件，用于文件夹复制
+	private boolean copyAll(String source, String target){
+		boolean ret = false;
+		
+		File dir = new File(source);
+		File targetDir = new File(target + DIR_SEPERATE + dir.getName());
+		if(dir.isDirectory()){
+			if(!targetDir.exists()){
+				targetDir.mkdirs();
+			}
+			File[] fileList = dir.listFiles();
+			for(File f : fileList){
+				if(f.isDirectory()){
+					ret = copyAll(f.getAbsolutePath(), targetDir.getAbsolutePath() + DIR_SEPERATE + f.getName());
+					if(!ret) return false; //一次复制失败直接返回失败
+				} else{
+					ret = copyFile(f.getAbsolutePath(), targetDir.getAbsolutePath() + DIR_SEPERATE + f.getName());
+					if(!ret) return false;
+				}
+			}
+		} else{
+			ret = copyFile(source, target + DIR_SEPERATE + dir.getName());
+		}
+		return ret;
+	}
 	
 	//文件复制
 	private boolean copyFile(String source, String target){
