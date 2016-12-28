@@ -1,12 +1,10 @@
 package util;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.ForkJoinPool;
 
 
 public class DBManager {
@@ -65,8 +63,9 @@ public class DBManager {
 	
 	//通过输入的sql查询语句进行查询操作
 	public ResultSet selectPath(String searchInfo){
-		String sql = "SELECT filedir FROM fileInfo WHERE"
-				   + " filedir LIKE \"" + searchInfo + "\" "
+		searchInfo = searchInfo.replace('*', '%'); //换成用于数据库的通配符
+		String sql = "SELECT filedir FROM FileInfo WHERE "
+				   + "filedir LIKE \"" + searchInfo + "\" "
 				   + "OR filename LIKE \"" + searchInfo + "\" "
 				   + "OR suffix LIKE \"" + searchInfo + "\";";
 		PreparedStatement preparedStatement = null;
