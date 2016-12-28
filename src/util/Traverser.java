@@ -30,16 +30,16 @@ public class Traverser {
 				for (File f : fileList) {
 					if (f.isDirectory()) {
 						directory.add(f);
-					} else {
-						String filename = f.getName();
-						String suffix;
-						if (filename.lastIndexOf('.') < 0)
-							suffix = "";
-						else
-							suffix = filename.endsWith(".tar.gz") ? "tar.gz"
-									: filename.substring(filename.lastIndexOf('.'));
-						dbManager.insertPath(f.getAbsolutePath(), filename, suffix);
-					}
+					} //else {
+					String filename = f.getName();
+					String suffix;
+					if (filename.lastIndexOf('.') < 0)
+						suffix = "";
+					else
+						suffix = filename.endsWith(".tar.gz") ? "tar.gz"
+								: filename.substring(filename.lastIndexOf('.'));
+					dbManager.insertPath(f.getAbsolutePath(), filename, suffix);
+					// }
 				}
 			} catch(NullPointerException e){
 				//如System Volume Information这种文件夹不可访问
