@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import util.DBManager;
+import util.DBManagerPool;
 import util.RecursiveTraverser;
 import util.Traverser;
 
@@ -256,9 +257,11 @@ public class Finder {
 		dbManager.createTable();
 		updateButton.setEnabled(false); //使按钮不可用
 		if(isMulti){
-			RecursiveTraverser rTraverser = new RecursiveTraverser(new File(path), dbManager);
+			DBManagerPool dbManagerPool = new DBManagerPool(10);  //数据库池包含10个DBManager
+			RecursiveTraverser rTraverser = new RecursiveTraverser(new File(path), dbManagerPool);
 			ForkJoinPool process = new ForkJoinPool(10);  //开启十个线程
 			process.invoke(rTraverser);
+			dbManagerPool.terminateAll();
 		} else{
 			Traverser traverser = new Traverser(path, dbManager);
 			traverser.traverseAndUpdate();
