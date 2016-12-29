@@ -33,6 +33,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -51,6 +52,8 @@ public class Finder {
 	private DefaultListModel<String> listModel;
 	
 	private DBManager dbManager;
+	private JScrollPane scrollPane;
+	private JList list;
 	/**
 	 * Launch the application.
 	 */
@@ -166,10 +169,21 @@ public class Finder {
 		});
 		popupMenu.add(copyItem);
 		
+		
+		
+		//用于启用是否使用多线程更新系统目录
+		isMultiThread = new JCheckBox("多线程");
+		isMultiThread.setBounds(925, 10, 65, 21);
+		frmQuickfinder.getContentPane().add(isMultiThread);
+
 		resultShow = new JList(listModel);
 		resultShow.setFont(new Font("宋体", 1, 13));
-		resultShow.setBounds(10, 41, 978, 510);
-		frmQuickfinder.getContentPane().add(resultShow);
+		resultShow.setBounds(10, 41, 974, 499);
+		
+		scrollPane = new JScrollPane(resultShow);
+		scrollPane.setBounds(10, 41, 974, 499);
+		frmQuickfinder.getContentPane().add(scrollPane);
+
 		resultShow.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e){
@@ -177,13 +191,7 @@ public class Finder {
 					popupMenu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
-		});
-		
-		
-		//用于启用是否使用多线程更新系统目录
-		isMultiThread = new JCheckBox("多线程");
-		isMultiThread.setBounds(925, 10, 65, 21);
-		frmQuickfinder.getContentPane().add(isMultiThread);
+		});		
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmQuickfinder.setJMenuBar(menuBar);
