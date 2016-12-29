@@ -6,7 +6,7 @@ import java.util.concurrent.RecursiveAction;
 
 /**
  * 用于使用ForkJoinPool进行多线程搜索<\br>
- * 但基本没有优化效果
+ * 优化效果微弱
  * @author giglf
  *
  */
@@ -16,10 +16,12 @@ public class RecursiveTraverser extends RecursiveAction {
 
 	private File file;
 	private DBManager dbManager;
+	private DBManagerPool dbManagerPool; //通过数据库池维护已建的数据库连接
 	
-	public RecursiveTraverser(File file, DBManager dbManager) {
+	public RecursiveTraverser(File file, DBManagerPool pool) {
 		this.file = file;
-		this.dbManager = dbManager;
+		this.dbManagerPool = pool;
+		this.dbManager = dbManagerPool.getDBManager();
 	}
 	
 	@Override
@@ -27,8 +29,8 @@ public class RecursiveTraverser extends RecursiveAction {
 		try {
 			File[] fileList = file.listFiles();
 			for (File f : fileList) {
-				if (f.isDirectory()) {
-					RecursiveTraverser traverser = new RecursiveTraverser(f, dbManager);
+				if (f.isDirectory()) { //遇到文件夹开启新的子线程进行遍历
+					RecursiveTraverser traverser = new RecursiveTraverser(f, dbManagerPool);
 					traverser.fork();
 					traverser.join();
 				} // else {
@@ -42,6 +44,7 @@ public class RecursiveTraverser extends RecursiveAction {
 				dbManager.insertPath(f.getAbsolutePath(), filename, suffix);
 				// }
 			}
+			dbManagerPool.returnDBManager(dbManager);
 		} catch(NullPointerException e){
 			System.out.println("该文件不可访问："+ file.getAbsolutePath());
 		}
