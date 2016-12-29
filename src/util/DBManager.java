@@ -1,10 +1,12 @@
 package util;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.ForkJoinPool;
 
 
 public class DBManager {
@@ -24,11 +26,12 @@ public class DBManager {
 			Class.forName(JDBC_DRIVER);
 			
 			//连接上数据库
-			System.out.println("Connecting to database...");
+			//System.out.println("Connecting to database...");
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
-			System.out.println("Connected database successfully...");
+			//System.out.println("Connected database successfully...");
 			statement = connection.createStatement();
 		} catch (Exception e) {
+			System.err.println("Connecting to database failed...");
 			e.printStackTrace();
 		}
 	}
@@ -93,32 +96,33 @@ public class DBManager {
 		try {
 			statement.close();
 			connection.close();
-			System.out.println("Database closed。。。");
+			//System.out.println("Database closed。。。");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-//	public static void main(String[] args) {
-////		DBManager dbManager = new DBManager();
-////		dbManager.dropTable();
-////		dbManager.createTable();
-////		long start = System.currentTimeMillis();
-////		Traverser traverser = new Traverser("E:\\someFile\\2016Grade3\\java大作业", dbManager);
-////		traverser.traverseAndUpdate();
-////		long end = System.currentTimeMillis();
-////		System.out.println("Single Thread time elapse: " + (end - start) + "ms");
-//
+	public static void main(String[] args) {
 //		DBManager dbManager = new DBManager();
 //		dbManager.dropTable();
 //		dbManager.createTable();
 //		long start = System.currentTimeMillis();
-//		RecursiveTraverser rTraverser = new RecursiveTraverser(new File("E:\\someFile\\2016Grade3\\java大作业"), dbManager);
+//		Traverser traverser = new Traverser("E:\\someFile\\2016Grade3\\java大作业", dbManager);
+//		traverser.traverseAndUpdate();
+//		long end = System.currentTimeMillis();
+//		System.out.println("Single Thread time elapse: " + (end - start) + "ms");
+//
+//		dbManager = new DBManager();
+//		dbManager.dropTable();
+//		dbManager.createTable();
+//		DBManagerPool pool = new DBManagerPool(10);
+//		start = System.currentTimeMillis();
+//		RecursiveTraverser rTraverser = new RecursiveTraverser(new File("E:\\someFile\\2016Grade3\\java大作业"), pool);
 //		ForkJoinPool process = new ForkJoinPool(10);
 //		process.invoke(rTraverser);
-//		long end = System.currentTimeMillis();
+//		end = System.currentTimeMillis();
 //		System.out.println("Multiple Thread time elapse: " + (end - start) + "ms");
-//		
-//	}
+		
+	}
 	
 }
