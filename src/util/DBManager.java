@@ -67,6 +67,7 @@ public class DBManager {
 	//通过输入的sql查询语句进行查询操作
 	public ResultSet selectPath(String searchInfo){
 		searchInfo = searchInfo.replace('*', '%'); //换成用于数据库的通配符
+		searchInfo = searchInfo.replace('\\', '/');
 		String sql = "SELECT filedir FROM FileInfo WHERE "
 				   + "filedir LIKE \"" + searchInfo + "\" "
 				   + "OR filename LIKE \"" + searchInfo + "\" "
@@ -102,7 +103,7 @@ public class DBManager {
 		}
 	}
 
-	public static void main(String[] args) {
+//	public static void main(String[] args) {
 //		DBManager dbManager = new DBManager();
 //		dbManager.dropTable();
 //		dbManager.createTable();
@@ -123,6 +124,6 @@ public class DBManager {
 //		end = System.currentTimeMillis();
 //		System.out.println("Multiple Thread time elapse: " + (end - start) + "ms");
 		
-	}
+//	}
 	
 }
